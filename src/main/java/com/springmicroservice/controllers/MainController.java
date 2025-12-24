@@ -1,25 +1,32 @@
 package com.springmicroservice.controllers;
 
-import com.springmicroservice.dto.ProviderProduct;
-import com.springmicroservice.services.FakeProviderApiService;
+import com.springmicroservice.services.ProductManagementService;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.List;
-
 @RestController
 public class MainController {
-    
-    FakeProviderApiService providerApiService = new FakeProviderApiService();
-    
+
+    public final ProductManagementService managementService;
+
+    public MainController(ProductManagementService managementService) {
+        this.managementService = managementService;
+    }
+
     @RequestMapping("/")
-    public String home(){
+    public String home() {
         return "API running";
     }
 
     @RequestMapping("/get-products/")
-    public List<ProviderProduct> getProducts(){
-        return providerApiService.getBaseProducts();
+    public Object getProducts() {
+        // TODO Too much logic in controller...
+        try {
+            managementService.importProviderProducts();
+            return "Provider products imported";
+        } catch (Exception e) {
+            return e;
+        }
     }
-    
+
 }
