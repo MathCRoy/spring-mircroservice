@@ -1,5 +1,5 @@
 services:
-  spring-micro:
+  api:
     build: 
       context: .
       dockerfile: Dockerfile.dev
@@ -10,3 +10,11 @@ services:
         - action: sync+restart
           path: ./target/classes
           target: /app/target/classes
+  db:
+    container_name: postgres
+    image: postgres
+    ports:
+      - "5332:5432"
+    environment:
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_USER: postgres

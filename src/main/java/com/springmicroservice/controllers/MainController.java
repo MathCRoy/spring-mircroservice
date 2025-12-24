@@ -14,7 +14,7 @@ public class MainController {
     
     @RequestMapping("/")
     public String home(){
-        return "Hello World! Spring microservice running!";
+        return "API running";
     }
 
     @RequestMapping("/get-products/")
