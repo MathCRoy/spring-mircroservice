@@ -22,6 +22,8 @@ public class ProductManagementService {
 
         List<ProviderProduct> providerProducts = providerApiService.getBaseProducts();
         
+        int a = 1/0;
+        
         List<Product> products = providerProducts.stream()
                 .map(ProviderProduct::toEntity)
                 .toList();
