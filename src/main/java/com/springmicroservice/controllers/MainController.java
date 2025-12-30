@@ -18,7 +18,7 @@ public class MainController {
 
     @GetMapping("/")
     public ResponseEntity home() {
-        return ResponseEntity.ok("Rest API Running");
+        return ResponseEntity.ok("Rest API Running!!!!");
     }
 
     @RequestMapping("/get-products/")
