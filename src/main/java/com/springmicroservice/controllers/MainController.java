@@ -18,17 +18,12 @@ public class MainController {
 
     @GetMapping("/")
     public ResponseEntity home() {
-        return ResponseEntity.ok("Rest API Running!!!!");
+        return ResponseEntity.ok("Rest API Running!");
     }
 
     @RequestMapping("/get-products/")
     public ResponseEntity getProducts() {
-        // TODO Too much logic in controller...
-        try {
-            managementService.importProviderProducts();
-            return ResponseEntity.ok("Provider's product successfully imported");
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error :" + e.getMessage());
-        }
+        managementService.importProviderProducts();
+        return ResponseEntity.ok("Provider's product successfully imported");
     }
 }
