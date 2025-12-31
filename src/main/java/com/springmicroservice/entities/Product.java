@@ -20,4 +20,10 @@ public class Product {
     
     private String category;
 
+    private String provider;
+
+    private int providerId;
+    
+    private boolean active;
+
 }

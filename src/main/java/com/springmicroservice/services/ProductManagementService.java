@@ -19,13 +19,15 @@ public class ProductManagementService {
     }
 
     public void importProviderProducts(){
-
-        List<ProviderProduct> providerProducts = providerApiService.getBaseProducts();
         
-        int a = 1 / 0;
+        List<ProviderProduct> providerProducts = providerApiService.getBaseProducts();
         
         List<Product> products = providerProducts.stream()
                 .map(ProviderProduct::toEntity)
+                .peek(product -> {
+                    product.setProvider("FakeStoreApi");
+                    product.setActive(true);
+                })
                 .toList();
         
         productRepository.saveAll(products);

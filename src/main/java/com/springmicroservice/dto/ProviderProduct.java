@@ -23,6 +23,7 @@ public class ProviderProduct {
         entity.setTitle(this.getTitle());
         entity.setDescription(this.getDescription());
         entity.setCategory(this.category);
+        entity.setProviderId(this.id);
         
         return entity; 
     }
