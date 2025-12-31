@@ -3,16 +3,24 @@ package com.springmicroservice.services;
 import com.springmicroservice.dto.ProviderProduct;
 import com.springmicroservice.entities.Product;
 import com.springmicroservice.repositories.ProductRepository;
+import jakarta.persistence.Entity;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.support.ManagedProperties;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Map;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
+@Slf4j
 @Service
 public class ProductManagementService {
     
     private final FakeProviderApiService providerApiService;
     private final ProductRepository productRepository;
 
+    // TODO Learn more about :actionlist
     public ProductManagementService(FakeProviderApiService providerApiService, ProductRepository productRepository) {
         this.providerApiService = providerApiService;
         this.productRepository = productRepository;
@@ -20,18 +28,37 @@ public class ProductManagementService {
 
     public void importProviderProducts(){
         
-        List<ProviderProduct> providerProducts = providerApiService.getBaseProducts();
-        
-        List<Product> products = providerProducts.stream()
+        List<ProviderProduct> rawProviderProducts = providerApiService.getBaseProducts();
+
+        Map<Integer, Product> providerProducts = rawProviderProducts.stream()
                 .map(ProviderProduct::toEntity)
                 .peek(product -> {
                     product.setProvider("FakeStoreApi");
                     product.setActive(true);
                 })
-                .toList();
+                .collect(Collectors.toMap(Product::getProviderId, Function.identity()));
         
-        productRepository.saveAll(products);
+        Map<Integer, Product> dbProducts = productRepository.findByProvider("FakeStoreApi")
+                .stream()
+                .collect(Collectors.toMap(Product::getProviderId, Function.identity()));
+        
+        dbProducts.entrySet().stream()
+                .peek(productEntry ->{
+                    int productKey = productEntry.getKey();
+                    if (providerProducts.containsKey(productKey)) {
+                        productEntry.setValue(providerProducts.get(productKey));
+                        providerProducts.remove(productEntry.getValue());
+                    } else {
+                        productEntry.getValue().setActive(false);
+                    }
+                });
+
+        // TODO merge dbProducts with the rest of the providerProducts, they are new ones that need to be inserted
+        
+        // TODO, filter for dirty?
+        
+        // TODO implement product update, deactivating if a product is no longer on in the API
+        productRepository.saveAll(providerProducts);
         
     }
-    
 }
