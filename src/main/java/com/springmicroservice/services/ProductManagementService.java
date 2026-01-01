@@ -3,12 +3,9 @@ package com.springmicroservice.services;
 import com.springmicroservice.dto.ProviderProduct;
 import com.springmicroservice.entities.Product;
 import com.springmicroservice.repositories.ProductRepository;
-import jakarta.persistence.Entity;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.support.ManagedProperties;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -28,37 +25,34 @@ public class ProductManagementService {
 
     public void importProviderProducts(){
         
-        List<ProviderProduct> rawProviderProducts = providerApiService.getBaseProducts();
-
-        Map<Integer, Product> providerProducts = rawProviderProducts.stream()
+        Map<Integer, Product> providerProducts = providerApiService.getBaseProducts().stream()
                 .map(ProviderProduct::toEntity)
                 .peek(product -> {
                     product.setProvider("FakeStoreApi");
                     product.setActive(true);
                 })
                 .collect(Collectors.toMap(Product::getProviderId, Function.identity()));
-        
+
         Map<Integer, Product> dbProducts = productRepository.findByProvider("FakeStoreApi")
                 .stream()
                 .collect(Collectors.toMap(Product::getProviderId, Function.identity()));
         
         dbProducts.entrySet().stream()
-                .peek(productEntry ->{
+                .forEach(productEntry ->{
                     int productKey = productEntry.getKey();
                     if (providerProducts.containsKey(productKey)) {
+                        int id = productEntry.getValue().getId();
                         productEntry.setValue(providerProducts.get(productKey));
-                        providerProducts.remove(productEntry.getValue());
+                        productEntry.getValue().setId(id);
+                        providerProducts.remove(productKey);
                     } else {
                         productEntry.getValue().setActive(false);
                     }
                 });
 
-        // TODO merge dbProducts with the rest of the providerProducts, they are new ones that need to be inserted
+        dbProducts.putAll(providerProducts);
         
-        // TODO, filter for dirty?
-        
-        // TODO implement product update, deactivating if a product is no longer on in the API
-        productRepository.saveAll(providerProducts);
+        productRepository.saveAll(dbProducts.values());
         
     }
 }
