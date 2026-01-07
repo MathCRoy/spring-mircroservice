@@ -1,7 +1,9 @@
 package com.springmicroservice.services;
 
 import com.springmicroservice.entities.Product;
+import com.springmicroservice.entities.Provider;
 import com.springmicroservice.repositories.ProductRepository;
+import com.springmicroservice.repositories.ProviderRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -15,18 +17,19 @@ public class ProductManagementService {
     
     private final FakeProviderApiService providerApiService;
     private final ProductRepository productRepository;
-    private final String fakeStoreProvider = "FakeStoreApi";
+    private final ProviderRepository providerRepository;
+    private final String fakeStoreProvider = "Fake Provider";
 
-    // TODO Learn more about :actionlist
-    public ProductManagementService(FakeProviderApiService providerApiService, ProductRepository productRepository) {
+    public ProductManagementService(FakeProviderApiService providerApiService, ProductRepository productRepository, ProviderRepository providerRepository) {
         this.providerApiService = providerApiService;
         this.productRepository = productRepository;
+        this.providerRepository = providerRepository;
     }
 
     public void importProviderProducts(){
         
-        Map<Integer, Product> providerProducts = getProviderProducts(fakeStoreProvider);
-        Map<Integer, Product> dbProducts = getDbProducts(fakeStoreProvider);
+        Map<Integer, Product> providerProducts = getProviderProducts();
+        Map<Integer, Product> dbProducts = getDbProducts();
 
         List<Product> toUpdate = getProductsToUpdate(providerProducts, dbProducts);
         List<Product> toDeactivate = getProductsToDeactivate(providerProducts, dbProducts);
@@ -41,21 +44,22 @@ public class ProductManagementService {
         
     }
     
-    private Map<Integer, Product> getProviderProducts(String provider){
+    private Map<Integer, Product> getProviderProducts(){
+        Provider fakeProvider = providerRepository.findByName(fakeStoreProvider);
         return providerApiService.getBaseProducts().stream()
                 .map(providerProduct -> {
                     Product product = providerProduct.toEntity();
-                    product.setProvider(provider);
+                    product.setProvider(fakeProvider);
                     product.setActive(true);
                     return product;
                 })
-                .collect(Collectors.toMap(Product::getProviderId, Function.identity()));
+                .collect(Collectors.toMap(Product::getProviderProductId, Function.identity()));
     }
 
-    private Map<Integer, Product> getDbProducts(String provider){
-       return productRepository.findByProvider(provider)
+    private Map<Integer, Product> getDbProducts(){
+        return productRepository.findByProviderName(fakeStoreProvider)
                 .stream()
-                .collect(Collectors.toMap(Product::getProviderId, Function.identity()));
+                .collect(Collectors.toMap(Product::getProviderProductId, Function.identity()));
     }
 
     private List<Product> getProductsToUpdate(Map<Integer, Product> providerProducts, Map<Integer, Product> dbProducts) {

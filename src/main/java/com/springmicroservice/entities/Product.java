@@ -20,9 +20,11 @@ public class Product {
     
     private String category;
 
-    private String provider;
+    @OneToOne
+    @JoinColumn(name = "provider_id")
+    private Provider provider;
 
-    private int providerId;
+    private int providerProductId;
     
     private boolean active;
 

@@ -20,7 +20,7 @@ public class MainController {
         return ResponseEntity.ok("Rest API Running");
     }
 
-    @RequestMapping("/get-products/")
+    @RequestMapping("/import-provider-products/")
     public ResponseEntity<String> getProducts() {
         managementService.importProviderProducts();
         return ResponseEntity.ok("Provider's product successfully imported");

@@ -7,3 +7,4 @@ CREATE TABLE products(
     description TEXT,
     category TEXT
 );
+

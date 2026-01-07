@@ -1,6 +1,7 @@
 package com.springmicroservice.dto;
 
 import com.springmicroservice.entities.Product;
+import com.springmicroservice.entities.Provider;
 import lombok.Data;
 
 @Data
@@ -23,7 +24,7 @@ public class ProviderProduct {
         entity.setTitle(this.getTitle());
         entity.setDescription(this.getDescription());
         entity.setCategory(this.category);
-        entity.setProviderId(this.id);
+        entity.setProviderProductId(this.id);
         
         return entity; 
     }
