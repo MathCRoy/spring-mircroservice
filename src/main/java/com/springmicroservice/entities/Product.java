@@ -2,9 +2,11 @@ package com.springmicroservice.entities;
 
 import jakarta.persistence.*;
 import lombok.Data;
+import org.hibernate.envers.Audited;
 
 @Data
 @Entity
+@Audited
 @Table(name = "products")
 public class Product {
     
