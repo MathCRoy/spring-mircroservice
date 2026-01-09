@@ -4,6 +4,7 @@ import com.springmicroservice.entities.Product;
 import com.springmicroservice.entities.Provider;
 import com.springmicroservice.repositories.ProductRepository;
 import com.springmicroservice.repositories.ProviderRepository;
+import org.javers.core.Javers;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -20,10 +21,13 @@ public class ProductManagementService {
     private final ProviderRepository providerRepository;
     private final String fakeStoreProvider = "Fake Provider";
 
-    public ProductManagementService(FakeProviderApiService providerApiService, ProductRepository productRepository, ProviderRepository providerRepository) {
+    private final Javers javers;
+    
+    public ProductManagementService(FakeProviderApiService providerApiService, ProductRepository productRepository, ProviderRepository providerRepository, Javers javers) {
         this.providerApiService = providerApiService;
         this.productRepository = productRepository;
         this.providerRepository = providerRepository;
+        this.javers = javers;
     }
 
     public void importProviderProducts(){
@@ -41,6 +45,7 @@ public class ProductManagementService {
         toSave.addAll(toInsert);
         
         productRepository.saveAll(toSave);
+        toSave.forEach(product -> javers.commit("Import-Provider-Products-Job",product));
         
     }
     
