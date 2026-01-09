@@ -6,7 +6,6 @@ import org.hibernate.envers.Audited;
 
 @Data
 @Entity
-@Audited
 @Table(name = "providers")
 public class Provider {
 

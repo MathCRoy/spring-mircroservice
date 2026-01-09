@@ -1,8 +1,10 @@
 package com.springmicroservice.dto;
 
 import com.springmicroservice.entities.Product;
-import com.springmicroservice.entities.Provider;
 import lombok.Data;
+
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 
 @Data
 public class ProviderProduct {
@@ -20,7 +22,8 @@ public class ProviderProduct {
     public Product toEntity(){
         Product entity = new Product();
         
-        entity.setPrice((float) (this.price * 1.2));
+        entity.setPrice(BigDecimal.valueOf(this.price * 1.2)
+                .setScale(2, RoundingMode.HALF_UP));
         entity.setTitle(this.getTitle());
         entity.setDescription(this.getDescription());
         entity.setCategory(this.category);

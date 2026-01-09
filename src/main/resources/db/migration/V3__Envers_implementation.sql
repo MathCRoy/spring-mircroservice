@@ -23,13 +23,3 @@ CREATE TABLE products_aud (
       PRIMARY KEY (id, rev),
       FOREIGN KEY (rev) REFERENCES revinfo (rev)
 );
-
--- Providers audit table
-CREATE TABLE providers_aud (
-       id INTEGER NOT NULL,
-       rev INTEGER NOT NULL,
-       revtype SMALLINT,
-       name TEXT,
-       PRIMARY KEY (id, rev),
-       FOREIGN KEY (rev) REFERENCES revinfo (rev)
-);
